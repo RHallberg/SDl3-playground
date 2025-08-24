@@ -1,4 +1,5 @@
 #define SDL_MAIN_USE_CALLBACKS 1  /* use the callbacks instead of main() */
+#include <stdlib.h>
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
@@ -12,6 +13,34 @@ typedef struct {
     int y;
 } MousePos;
 MousePos mpos = {0, 0};
+typedef struct {
+  unsigned char r;
+  unsigned char g;
+  unsigned char b;
+  unsigned char a;
+} Clr;
+
+void cycleClr(Clr *clr)
+{
+
+  int rng = rand() % 3 + 1;
+  int crng = rand() % 5 + 1;
+
+  switch(rng)
+  {
+    case 1:
+      clr->r = clr->r + crng;
+      break;
+    case 2:
+      clr->g = clr->g + crng;
+      break;
+    case 3:
+      clr->b = clr->b + crng;
+      break;
+  }
+}
+
+Clr color = {1,1,1,255};
 
 /* This function runs once at startup. */
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
@@ -40,6 +69,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
     else if(event->type == SDL_EVENT_MOUSE_MOTION){
       mpos.x = event->motion.x;
       mpos.y = event->motion.y;
+      cycleClr(&color);
     }
     return SDL_APP_CONTINUE;  /* carry on with the program! */
 }
@@ -48,7 +78,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
 SDL_AppResult SDL_AppIterate(void *appstate)
 {
 
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);  /* start with a blank canvas. */
 
     int w_w;
@@ -68,7 +98,7 @@ SDL_AppResult SDL_AppIterate(void *appstate)
       SDL_RenderFillRect(renderer, &outline);
 
     }
-    SDL_SetRenderDrawColor(renderer, 200, 200, 200, SDL_ALPHA_OPAQUE);
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
     SDL_RenderFillRect(renderer, &rect);
     SDL_RenderPresent(renderer);
 
